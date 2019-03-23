@@ -49,7 +49,7 @@ comment "Install git to get access to the real stuff"
 cond_exec yay -S git
 
 comment "Install system utility tools"
-cond_exec yay -S net-tools htop
+cond_exec yay -S net-tools htop xclip
 
 comment "Install tools for the terminal"
 cond_exec yay -S screen kitty hstr-git oh-my-zsh-git powerline-fonts-git xcwd-git
@@ -101,7 +101,7 @@ pip install --user bpython
 yay -S keepass
 
 # Office
-yay -S firefox thunderbird libreoffice-fresh libreoffice-fresh-de
+yay -S firefox thunderbird thunderbird-i18n-de libreoffice-fresh libreoffice-fresh-de foxitreader
 
 # Latex
 yay -S texlive-most biber texlive-localmanager-git
@@ -109,10 +109,8 @@ code --install-extension James-Yu.latex-workshop
 # For minted package (code highlighting)
 yay -S python-pygments pygmentize
 
-
-
 # Communication
-yay -S rambox telegram-desktop
+yay -S rambox telegram-desktop skypeforlinux-preview-bin
 
 # Multimedia editing
 yay -S gimp inkscape audacity redshift
