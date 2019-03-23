@@ -45,15 +45,18 @@ cond_exec sudo pacman -S yay
 comment "Updating all existing packages"
 cond_exec yay -Syu
 
+comment "Install git to get access to the real stuff"
+cond_exec yay -S git
+
 comment "Install system utility tools"
 cond_exec yay -S net-tools htop
 
 comment "Install tools for the terminal"
-cond_exec yay -S screen kitty hstr-git oh-my-zsh-git powerline-fonts-git
+cond_exec yay -S screen kitty hstr-git oh-my-zsh-git powerline-fonts-git xcwd-git
 # TODO: Set this up
 
 comment "Install text/code editors"
-cond_exec yay -S git vim gedit code
+cond_exec yay -S vim gedit code
 
 if command -v code; then
     # VS Code is installed -> can set it up
@@ -78,10 +81,16 @@ fi
 # Safety barrier for now
 echo -e "\n$(red "=== Installation script completed without errors ===")"
 exit 0
-
+blurlock
 # own i3lock
 yay -S betterlockscreen
 # TODO: Setup that it is default option and will be used
+
+# Lock screen on closing the lid
+# TODO Replace User= line by current username 
+sudo cp svc/lockscreen.service /etc/systemd/system/
+sudo systemctl enable lockscreen
+
 
 # Python stuff
 yay -S python-pip python2-pip
@@ -120,8 +129,14 @@ yay -S vinagre
 rmmod pcspkr
 echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
 
-# Copy user /bin folder
-# TODO Copy
+# Copy user ~/bin folder
+git clone git@github.com:fr34q/personal-bin.git ~/bin
+
+# Set zsh as shell and configure kitty
+cp cfg/.zshrc ~/
+mkdir -p ~/.config/kitty
+cp cfg/kitty.conf ~/.config/kitty/
+chsh $(which zsh)
 
 # Set default applications
 # TODO Replace or extend ~/.config/mimeapps.list
