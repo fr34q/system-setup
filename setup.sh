@@ -81,9 +81,9 @@ fi
 # Safety barrier for now
 echo -e "\n$(red "=== Installation script completed without errors ===")"
 exit 0
-blurlock
+
 # own i3lock
-yay -S betterlockscreen
+yay -S betterlockscreen i3blocks
 # TODO: Setup that it is default option and will be used
 
 # Lock screen on closing the lid
