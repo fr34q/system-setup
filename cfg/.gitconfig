@@ -1,0 +1,24 @@
+[user]
+	name = <GITNAME>
+	email = <GITEMAIL>
+
+[alias]
+ tree = log --graph --decorate --pretty=oneline --abbrev-commit
+ t = tag
+ s = status
+ c = commit
+ co = checkout
+ b = branch
+ p = pull
+ pu = push
+ r = rebase
+ rb = rebase
+ a = add
+ d = diff
+ lol = log --graph --decorate --pretty=oneline --abbrev-commit
+ lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+ worddiff = diff --word-diff=color --word-diff-regex='[^ [:space:],.()]+|[^[:space:]]'
+ staged = diff --staged
+ cp = cherry-pick
+[credential]
+	helper = gnome-keyring

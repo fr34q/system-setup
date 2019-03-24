@@ -31,6 +31,10 @@ cond_exec () {
     fi
 }
 
+is_cmd () {
+    command -v $@ &>/dev/null
+}
+
 echo "$(red "=== Installation script to setup a new Manjaro installation ===")"
 echo "Press enter to continue. Script will be aborted if anything else is pressed."
 echo -n "?> " && read LINE
@@ -48,17 +52,55 @@ cond_exec yay -Syu
 comment "Install git to get access to the real stuff"
 cond_exec yay -S git
 
+comment "Copy and personalize configuration for git"
+setup_git () {
+    GITCFG="$HOME/.gitconfig"
+    cp cfg/.gitconfig $GITCFG
+    echo -n "Your name for global git config: " && read GITNAME
+    sed -i "s/<GITNAME>/$GITNAME/g" "$GITCFG"
+    echo -n "Your e-mail for global git config: " && read GITEMAIL
+    sed -i "s/<GITEMAIL>/$GITEMAIL/g" "$GITCFG"
+}
+cond_exec setup_git
+
 comment "Install system utility tools"
 cond_exec yay -S net-tools htop xclip
 
 comment "Install tools for the terminal"
 cond_exec yay -S screen kitty hstr-git oh-my-zsh-git powerline-fonts-git xcwd-git
-# TODO: Set this up
+
+if is_cmd zsh && is_cmd kitty; then
+    comment "Set zsh as default shell and configure kitty"
+    setup_shell () {
+        cp cfg/.zshrc "$HOME/"
+        mkdir -p "$HOME/.config/kitty"
+        cp cfg/kitty.conf "$HOME/.config/kitty/"
+        chsh $(which zsh)
+    }
+    cond_exec setup_shell
+fi
+
+comment "Install user scripts to ~/bin"
+cond_exec git clone git@github.com:fr34q/personal-bin.git ~/bin
+
+comment "Install personalizations for i3 window manager"
+cond_exec yay -S betterlockscreen i3blocks
+
+comment "Install configuration for i3 window manager"
+cond_exec git clone --recurse-submodules git@github.com:fr34q/i3-config.git $HOME/.config/i3
+
+comment "Enable lockscreen after closing the laptop lid"
+setup_lockscreen () {
+    # TODO Replace User= line by current username 
+    sudo cp svc/lockscreen.service /etc/systemd/system/
+    sudo systemctl enable lockscreen
+}
+cond_exec setup_lockscreen
 
 comment "Install text/code editors"
 cond_exec yay -S vim gedit code
 
-if command -v code; then
+if is_cmd code; then
     # VS Code is installed -> can set it up
 
     install_code_extensions () {
@@ -81,15 +123,6 @@ fi
 # Safety barrier for now
 echo -e "\n$(red "=== Installation script completed without errors ===")"
 exit 0
-
-# own i3lock
-yay -S betterlockscreen i3blocks
-# TODO: Setup that it is default option and will be used
-
-# Lock screen on closing the lid
-# TODO Replace User= line by current username 
-sudo cp svc/lockscreen.service /etc/systemd/system/
-sudo systemctl enable lockscreen
 
 
 # Python stuff
@@ -127,31 +160,9 @@ yay -S vinagre
 rmmod pcspkr
 echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
 
-# Copy user ~/bin folder
-git clone git@github.com:fr34q/personal-bin.git ~/bin
-
-# Set zsh as shell and configure kitty
-cp cfg/.zshrc ~/
-mkdir -p ~/.config/kitty
-cp cfg/kitty.conf ~/.config/kitty/
-chsh $(which zsh)
 
 # Set default applications
 # TODO Replace or extend ~/.config/mimeapps.list
-
-# Customized i3 config
-# TODO Replace ~/.i3/config
-
-# User betterlockscreen as lockscreen
-# TODO set in $(which blurlock) or in ~/.i3/config
-
-# Set zsh as shell and configure kitty
-# TODO Copy .Xdefaults und .zshrc
-chsh $(which zsh)
-# TODO Copy .config/kitty/kitty.conf
-
-# Copy git config
-# TODO .gitconfig
 
 # Setup KIT VPN connection
 # TODO Include KIT.ovpn
