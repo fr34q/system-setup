@@ -91,8 +91,12 @@ cond_exec git clone --recurse-submodules git@github.com:fr34q/i3-config.git $HOM
 
 comment "Enable lockscreen after closing the laptop lid"
 setup_lockscreen () {
-    # TODO Replace User= line by current username 
-    sudo cp svc/lockscreen.service /etc/systemd/system/
+    LOCKSCREENUSER=$(id -u -n)
+    LOCKSCREENPATH=$(echo "$HOME/bin/lockscreen" | sed 's_/_\\/_g')
+    cp svc/lockscreen.service /tmp/lockscreen.service
+    sed -i "s/<LOCKSCREENUSER>/$LOCKSCREENUSER/g" /tmp/lockscreen.service
+    sed -i "s/<LOCKSCREENPATH>/$LOCKSCREENPATH/g" /tmp/lockscreen.service
+    sudo cp /tmp/lockscreen.service /etc/systemd/system/
     sudo systemctl enable lockscreen
 }
 cond_exec setup_lockscreen
